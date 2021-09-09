@@ -78,10 +78,16 @@ what that is, just trust that this makes it _super_ easy to talk to.
 
 ### Without the Nintendo Controller Adapter plug
 
+### Step #1: Cut the wires!
+
 If you didn't get a Nintendo Controller adapter plug, you'll need to cut the
 plug off of your SNES Classic controller & strip the 4 wires so you can solder
 them to your controller. The 4 wires in my controller are Red, White, Yellow,
 and Green.
+
+![cut-wire](./img/cut-wire.jpg)
+
+### Step #2: Figure out pins
 
 Identify which pins on your Arduino-ish device are
 
@@ -100,49 +106,54 @@ Identify which pins on your Arduino-ish device are
     If you're using SCL1, you probably need to make minor edits to the code and
     make sure you're using SDA1)
 
-Once you've identified which pins are which, solder the wires from your SNES
-controller to the Arduino-ish device like this:
+### Step #3: strip the wires
+
+Once you've identified which pins are which, strip & solder the wires from your
+SNES controller to the Arduino-ish device like this:
 
 - White to GND
 - Red to Power
 - Yellow to SCL
 - Green to SDA
 
-After you've got those 4 wires soldered, all you've got left is to get the
-firmware flashed onto the Arduino device.
+### Step #4: Solder!
+
+**Ready for soldering**
+
+![Start soldering](./img/start-solder.jpg)
+
+**Soldering complete**
+
+![Soldering complete front](./img/done-solder-front.jpg)
+
+![Soldering complete back](./img/done-solder-back.jpg)
+
+I know: I'm _amazing_ as soldering.
+
+### Step #5: Hot glue
 
 To make the thing hold together a little better, I hot glued the underside of
 the Arduino-ish device (in the photos, it's a "USB Elite-C" Pro-Micro clone I
-had laying around. I debugged the software using a Teensy 3.2, because it was an
-easier workflow)
+had laying around.)
 
-## Mapping details
+![Before the glue](./img/hot-glue-before.jpg)
 
-| Operation              | Controller Combo                    |
-| ---------------------- | ----------------------------------- |
-| Enable/Disable pendant | `Left Bumper` + `Start`             |
-| Go Home                | `Both Bumpers` + `Select` + `Start` |
-| Soft Reset             | `Right Bumper` + `Select`           |
-| Unlock                 | `Right Bumper` + `Start`            |
-| Return to zero         | `Left Bumper` + `Select`            |
-|                        |                                     |
-| Reset Zero All         | `Start` + `Select`                  |
-| Reset Zero X           | `Both Bumpers` + `X`                |
-| Reset Zero Y           | `Both Bumpers` + `Y`                |
-| Reset Zero Z           | `Both Bumpers` + `Start`            |
+![During the glue](./img/hot-glue-during.jpg)
 
-**Keybindings for X/Y direction:** For X/Y Directions, press the DPad. Hold one
-bumper to go the "medium" distance (10x normal). Hold _both_ bumpers to go the
-"large" distance (100x normal)
+**Hardware is done!**
 
-**Keybindings for Z direction:** For the Z direction, use the A/B buttons for
-up/down. Same as the DPad, hold one bumper for 'medium' and both for 'large'
-distance.
+![Hot glue done](./img/done.jpg)
 
-| Direction | Controller |
-| --------: | :--------- |
-|    Z+ (🡹) | `A`        |
-|    Z- (🡻) | `B`        |
+After you've got those 4 wires soldered, all you've got left is to get the
+firmware flashed onto the Arduino device.
+
+### Step #6: Flash the device
+
+**TODO:** Instructions for building the thing in Arduino
+
+I debugged the software using a Teensy 3.2, because it was an easier workflow)
+
+### Step #7: Remap the keys in UGS
 
 To make all of this magic work, in the UGS Platform release you need to set the
 keymappings for the actions in the "Machine" category as follows:
@@ -182,6 +193,45 @@ need to add input to output lag:
 | Jog: X- Y+ | Ctrl+Shift+O      |
 | Jog: X+ Y- | Ctrl+Shift+M      |
 | Jog: X- Y- | Ctrl+Shift+Period |
+
+**TODO:** Add a screen shot or two or three
+
+### Step #8: PROFIT!
+
+And now, it works!
+
+### Step #9: Debugging
+
+I used `carnac` on Windows to make sure the device was sending the right
+keystrokes to the device.
+
+## Mapping details
+
+| Operation              | Controller Combo                    |
+| ---------------------- | ----------------------------------- |
+| Enable/Disable pendant | `Left Bumper` + `Start`             |
+| Go Home                | `Both Bumpers` + `Select` + `Start` |
+| Soft Reset             | `Right Bumper` + `Select`           |
+| Unlock                 | `Right Bumper` + `Start`            |
+| Return to zero         | `Left Bumper` + `Select`            |
+|                        |                                     |
+| Reset Zero All         | `Start` + `Select`                  |
+| Reset Zero X           | `Both Bumpers` + `X`                |
+| Reset Zero Y           | `Both Bumpers` + `Y`                |
+| Reset Zero Z           | `Both Bumpers` + `Start`            |
+
+**Keybindings for X/Y direction:** For X/Y Directions, press the DPad. Hold one
+bumper to go the "medium" distance (10x normal). Hold _both_ bumpers to go the
+"large" distance (100x normal)
+
+**Keybindings for Z direction:** For the Z direction, use the A/B buttons for
+up/down. Same as the DPad, hold one bumper for 'medium' and both for 'large'
+distance.
+
+| Direction | Controller |
+| --------: | :--------- |
+|    Z+ (🡹) | `A`        |
+|    Z- (🡻) | `B`        |
 
 ## Implementation
 
