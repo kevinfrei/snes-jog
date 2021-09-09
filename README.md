@@ -1,12 +1,13 @@
 # snes-jog
 
-Code and Instructions for using a SNES Classic gamepad as a CNC Jog Controller with
-Universal GCode Sender. I learned everything in the code from trial & error, plus
-reading through
+Code and Instructions for using a SNES Classic gamepad as a CNC Jog Controller
+with fabulously free & useful
+[Universal GCode Sender](http://winder.github.io/ugs_website/). I learned
+everything in the code from trial & error, plus reading through
 [this file](https://github.com/mistydemeo/super_nes_classic_edition_oss/blob/master/clvcon-km-6fd0ec177b321206da5bc1b288fd6d7fdf5df7ae/clvcon-km-6fd0ec177b321206da5bc1b288fd6d7fdf5df7ae/clvcon.c).
 Good luck! Feel free to open issues. I'm posting this to github before I've
-tested it with my CNC, so who knows if it works yet (It looks like it sends
-the keystrokes I want)
+tested it with my CNC, so who knows if it works yet (It looks like it sends the
+keystrokes I want)
 
 # Incomplete instructions
 
@@ -19,7 +20,9 @@ what that is, just trust that this makes it _super_ easy to talk to.
 
 - Hardware
 
-  - SNES Classic controller (Wired) (todo: Link)
+  - SNES Classic Mini controller (Wired)
+    [Amazon link for the controller](https://www.amazon.com/Mario-Retro-SNES-MINI-Controller-Compatible/dp/B0779DS931/ref=sr_1_54_sspa?dchild=1&keywords=SNES&qid=1631203806&s=videogames&sr=1-54-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExN1ZZMDk0UjdEVEc4JmVuY3J5cHRlZElkPUEzU0pFS1VYOVBXMkxBJmVuY3J5cHRlZEFkSWQ9QTA2MTE1NzYxNTBXNTRDMERJQ1lTJndpZGdldE5hbWU9c3BfbXRmJmFjdGlvbj1jbGlja1JlZGlyZWN0JmRvTm90TG9nQ2xpY2s9dHJ1ZQ==),
+    [Amazon link for the whole package](https://www.amazon.com/Console-Classic-Built-Controllers-Birthday/dp/B08V4RJQPF/ref=sr_1_2_sspa?dchild=1&keywords=SNES+classic&qid=1631204003&s=videogames&sr=1-2-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUEzSUZEMTBaTDBSUFBOJmVuY3J5cHRlZElkPUEwMTczMzg0MllGV1hEMDNGR0Y5TSZlbmNyeXB0ZWRBZElkPUEwMjYwMDk0MjNWWUc2N0ZWOFFENSZ3aWRnZXROYW1lPXNwX2F0ZiZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU=)
   - An Arduino-compatible device that supports both USB keyboard protocol & I2C
     - (A _lot_ of devices fall under this guise. I have a variety of these
       laying around.)
@@ -32,16 +35,18 @@ what that is, just trust that this makes it _super_ easy to talk to.
       fits the bill
     - TODO: Make links to those things?
   - Optional:
-    - A Nintendo Controller female adapter plug
+    - A Nintendo Controller female adapter plug (TODO: Link?)
       - I didn't bother with my initial build
-      - This would enable you to NOT cut the wires for the controller,
-        making the end result a bit 'cleaner'
+      - This would enable you to NOT cut the wires for the controller, making
+        the end result a bit 'cleaner'
 
 - Software
 
-  - Arduino Studio (available for Mac, PC, and Linux: I've used all 3 successfully)
+  - Arduino Studio (available for Mac, PC, and Linux: I've used all 3
+    successfully)
   - Depending on the device, you make need separate 'flashing' software.
-    - Getting Arduino Studio and firmware flashing up & going is beyond the scope of these instructions
+    - Getting Arduino Studio and firmware flashing up & going is beyond the
+      scope of these instructions
     - TODO: Link to directions for all. I've got multiple of each...
 
 - Tools
@@ -56,8 +61,8 @@ what that is, just trust that this makes it _super_ easy to talk to.
   - Soldering
   - Wire stripping
   - Ability to edit UGS key-mappings
-  - Digging around on your Arduino-compatible device's pinout diagram to figure out
-    which pins are: Power, Ground, SCL, and SDA.
+  - Digging around on your Arduino-compatible device's pinout diagram to figure
+    out which pins are: Power, Ground, SCL, and SDA.
   - Installing Arduino "stuff"
   - Using Arduino to build & flash your device
   - TODO: I could host builds for various devices, to eliminate most of the
@@ -103,7 +108,10 @@ controller to the Arduino-ish device like this:
 After you've got those 4 wires soldered, all you've got left is to get the
 firmware flashed onto the Arduino device.
 
-To make the thing hold together a little better, I hot glued the underside of the Arduino-ish device (in the photos, it's a "USB Elite-C" Pro-Micro clone I had laying around. I debugged the software using a Teensy 3.2, because it was an easier workflow)
+To make the thing hold together a little better, I hot glued the underside of
+the Arduino-ish device (in the photos, it's a "USB Elite-C" Pro-Micro clone I
+had laying around. I debugged the software using a Teensy 3.2, because it was an
+easier workflow)
 
 ## Mapping details
 
@@ -167,9 +175,28 @@ keymappings for the actions in the "Machine" category as follows:
 
 ## Motivation
 
-I've been running a CNC Machine (todo: Link to PowerRoute) for several years
-now. Unfortunately, it's kind of clunky to control using a mouse or keyboard.
-There are a variety of devices one can purchase called "Jog Controllers" that
-give you a dedicated device for moving around the CNC spindle. The trouble is,
-they're expensive, and I have no idea if they'd work with my little hobbyist
-setup, using the reasonably good UGS G-Code sender/CNC control software.
+I've been running a
+[CNC Machine](https://millrightcnc.com/product/millright-cnc-power-route-kit-bundle/)
+for several years now. Unfortunately, it's kind of clunky to control using a
+mouse or keyboard. There are a variety of devices one can purchase called "Jog
+Controllers" that give you a dedicated device for moving around the CNC spindle.
+The trouble is, they're expensive, and I have no idea if they'd work with my
+little hobbyist setup, using the reasonably good UGS G-Code sender/CNC control
+software.
+
+# TODO
+
+## Software
+
+- Make the big switch into a declarative state machine of some kind
+- Maybe break the code into better pieces to enable support for other
+  controllers/protocols?
+
+# Documentation
+
+- Pictures
+- General improvement
+
+# Hardware
+
+- Make a little 3D printed case?
