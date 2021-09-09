@@ -1,7 +1,7 @@
-# snes-jog
+# SNES-Jog: Making a UGS CNC Jog Controller from an SNES controller
 
-Code and Instructions for using a SNES Classic gamepad as a CNC Jog Controller
-with fabulously free & useful
+Code and Instructions for using a "SNES Classic mini" gamepad as a CNC Jog
+Controller with fabulously free & useful
 [Universal GCode Sender](http://winder.github.io/ugs_website/). I learned
 everything in the code from trial & error, plus reading through
 [this file](https://github.com/mistydemeo/super_nes_classic_edition_oss/blob/master/clvcon-km-6fd0ec177b321206da5bc1b288fd6d7fdf5df7ae/clvcon-km-6fd0ec177b321206da5bc1b288fd6d7fdf5df7ae/clvcon.c).
@@ -9,12 +9,19 @@ Good luck! Feel free to open issues. I'm posting this to github before I've
 tested it with my CNC, so who knows if it works yet (It looks like it sends the
 keystrokes I want)
 
-# Incomplete instructions
+[Click here for the UGS stuff to verify before each use](#Step-8-Before-each-use-of-UGS)
 
-# How to make a Jog Controller for use with UGS from an SNES classic controller
+To see a video of it in (one handed) action,
+[click here](https://1drv.ms/v/s!Ap9iqQ7FiN9Qhswu_Yi-vvz0VaJNSQ)
+
+# Incomplete instructions:
+
+**How to make a Jog Controller for use with UGS from an SNES classic
+controller**
 
 The SNES Classic controller is a simple I2C peripheral. For folks who don't know
-what that is, just trust that this makes it _super_ easy to talk to.
+what that is, just trust that this makes it _super_ easy to talk to from just
+about any Arduino device.
 
 ## Requirements
 
@@ -78,7 +85,7 @@ what that is, just trust that this makes it _super_ easy to talk to.
 
 ### Without the Nintendo Controller Adapter plug
 
-### Step #1: Cut the wires!
+### Step 1 Cut the wires
 
 If you didn't get a Nintendo Controller adapter plug, you'll need to cut the
 plug off of your SNES Classic controller & strip the 4 wires so you can solder
@@ -87,7 +94,7 @@ and Green.
 
 ![cut-wire](./img/cut-wire.jpg)
 
-### Step #2: Figure out pins
+### Step 2 Figure out pins
 
 Identify which pins on your Arduino-ish device are
 
@@ -106,7 +113,7 @@ Identify which pins on your Arduino-ish device are
     If you're using SCL1, you probably need to make minor edits to the code and
     make sure you're using SDA1)
 
-### Step #3: strip the wires
+### Step 3 Strip the wires
 
 Once you've identified which pins are which, strip & solder the wires from your
 SNES controller to the Arduino-ish device like this:
@@ -116,7 +123,7 @@ SNES controller to the Arduino-ish device like this:
 - Yellow to SCL
 - Green to SDA
 
-### Step #4: Solder!
+### Step 4 Soldering
 
 **Ready for soldering**
 
@@ -130,7 +137,7 @@ SNES controller to the Arduino-ish device like this:
 
 I know: I'm _amazing_ as soldering.
 
-### Step #5: Hot glue
+### Step 5 Hot glue
 
 To make the thing hold together a little better, I hot glued the underside of
 the Arduino-ish device (in the photos, it's a "USB Elite-C" Pro-Micro clone I
@@ -147,13 +154,13 @@ had laying around.)
 After you've got those 4 wires soldered, all you've got left is to get the
 firmware flashed onto the Arduino device.
 
-### Step #6: Flash the device
+### Step 6 Flash the device
 
 **TODO:** Instructions for building the thing in Arduino
 
 I debugged the software using a Teensy 3.2, because it was an easier workflow)
 
-### Step #7: Remap the keys in UGS
+### Step 7 Remap the keys in UGS
 
 To make all of this magic work, in the UGS Platform release you need to set the
 keymappings for the actions in the "Machine" category as follows:
@@ -196,11 +203,32 @@ need to add input to output lag:
 
 **TODO:** Add a screen shot or two or three
 
-### Step #8: PROFIT!
+### Step 8 Before each use of UGS
+
+**This is very important, as you can crash your CNC machine if you're not paying
+attention**
+
+Go to the UGS "Jog Controller" plug-in and make sure that your XY Step is set to
+10mm, and the Z step is set to 1mm. The way the code I wrote moves between
+small, medium, and large steps is by sending the appropriate number of "Multiply
+XY/Z Step by 10" or "Divide XY/Z Step by 10" commands. So, if you want you large
+X/Y step to be 100 mm, when you start UGS, set the XY step to 10mm. That will
+also make the small X/Y step be 1mm. Same goes for Z: Set the Z step to 1mm,
+then when you hold both bumpers for a "large" Z step, you'll get a 10mm shift, 1
+bumper for medium gives you a 1mm movement, and a small one gives you 0.1mm.
+
+If you prefer imperial units, I'm sorry that you had such a rough childhood. I
+really love math, but for CNC (and lots of other things) I really prefer metric
+over imperial. You could switch it to inches and get a 10 inch/1 inch/0.1 inch
+XY step and and 1 inch/0.1 inch/0.01 inch Z step. For X/Y, that seems pretty
+terrible, honestly, and my CNC has a workpiece size of 25 inches or so. You
+could probalby use 1 inch/0.1 inch/0.01 inch for X if you really want...
+
+### Step #9: PROFIT!
 
 And now, it works!
 
-### Step #9: Debugging
+### Final Step: Debugging
 
 I used `carnac` on Windows to make sure the device was sending the right
 keystrokes to the device.
