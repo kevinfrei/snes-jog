@@ -153,13 +153,9 @@ keymappings for the actions in the "Machine" category as follows:
 | Jog: Divide XY Step Size by 10   | Ctrl+Shift+F2        |
 | Jog: Multiply Z Step Size by 10  | Ctrl+Shift+F5        |
 | Jog: Divide Z Step Size by 10    | Ctrl+Shift+F6        |
-| Jog: X+ Y+                       | Ctrl+Shift+U         |
 | Jog: Y+                          | Ctrl+Shift+I         |
-| Jog: X- Y+                       | Ctrl+Shift+O         |
 | Jog: X+                          | Ctrl+Shift+J         |
 | Jog: X-                          | Ctrl+Shift+L         |
-| Jog: X+ Y-                       | Ctrl+Shift+M         |
-| Jog: X- Y-                       | Ctrl+Shift+Period    |
 | Jog: Y-                          | Ctrl+Shift+Comma     |
 | Jog: Z+                          | Ctrl+Shift+Y         |
 | Jog: Z-                          | Ctrl+Shift+H         |
@@ -176,6 +172,16 @@ I used the 'Ctrl+Shift' modifier because it's the same for any platform. If I'd
 tried Alt or Command, things would have been much more complicated when working
 across platforms. Trust me on this: I've made too many keyboards and too many
 custom keyboard firmwares to address this exact problem.
+
+These aren't working right now. To get diagonal motion working as expected, I'll
+need to add input to output lag:
+
+| Actions    | Shortcut          |
+| ---------- | ----------------- |
+| Jog: X+ Y+ | Ctrl+Shift+U      |
+| Jog: X- Y+ | Ctrl+Shift+O      |
+| Jog: X+ Y- | Ctrl+Shift+M      |
+| Jog: X- Y- | Ctrl+Shift+Period |
 
 ## Implementation
 
