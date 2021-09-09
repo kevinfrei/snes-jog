@@ -5,71 +5,26 @@
  * See the keybindings in the README.md file
  */
 
-// Also, this code is a hot mess, currently.
-// I should clean it up and organize it a bit better.
-// For the love of god, at least move some stuff to headers!
+// I'd prefer a nice Makefile and a number of different .cpp files, but
+// that would really make this more complicated for non-software people,
+// so adapt to Arduino .ino files and just use headers, I guess...
 
-#if defined(LOTSA_TYPING)
-#define DBG(a) Keyboard.print(a)
-#define DBGN(n) TypeNumber(n)
-#define DESCRIBE_NOT_TYPE 1
-#else
-#define DBG(a) 0
-#define DBGN(a) 0
-#endif
+#include "mytypes.h"
+#include "buttons.h"
 
 const uint8_t I2C_ADDR = 0x52;
-typedef uint16_t Button_t;
-enum ControllerState { CS_OK, CS_RETRY, CS_INIT, CS_ERR };
-enum State_t {
-  ST_ControllerDisabled,
-  ST_MaybeEnabledA,
-  ST_MaybeEnabledB,
-  ST_MaybeEnabledC,
-  ST_Enabled,
-  ST_WaitForResetX,
-  ST_WaitForResetY,
-  ST_WaitForResetZ,
-  ST_WaitForDisable,
-  ST_MaybeGoHome,
-  ST_WaitForMaybeHome,
-  ST_WaitForReturnToZero,
-  ST_WaitForSameJogUp,
-  ST_WaitForUnlock,
-  ST_WaitForReset,
-  ST_WaitForStart,
-  ST_WaitForSelect,
-  ST_WaitForSSUp
-};
-
 ControllerState cur_state;
 uint16_t retry_counter;
-
 uint8_t buffer[32];
+uint8_t XY_CurJog = XY_MEDIUM;
+uint8_t Z_CurJog = Z_MEDIUM;
+uint16_t curPressed = 0;
+uint16_t curJog = 0;
+State_t controllerState = ST_ControllerDisabled;
+uint16_t prevButtons = 0xFFFF;
 
-void TypeNumber(uint32_t num) {
-  uint32_t val = 0;
-  // Flip the number around to type it out
-  uint8_t trailingZeroes = 0;
-  while (num) {
-    uint8_t v = num % 10;
-    val = val * 10 + v;
-    num = num / 10;
-    if (val == 0) {
-      trailingZeroes++;
-    } else {
-      trailingZeroes = 0;
-    }
-  }
-  // Type the reversed number Least sig digit first...
-  do {
-    Keyboard.write('0' + val % 10);
-    val /= 10;
-  } while (val);
-  while (trailingZeroes--) {
-    Keyboard.write('0');
-  }
-}
+// This needs to be below our global definitions...
+#include "debugging.h"
 
 uint8_t writeData(uint8_t* data, uint8_t size, const char* err = NULL) {
   Wire.beginTransmission(I2C_ADDR);
@@ -169,52 +124,6 @@ void setupController() {
   }
 }
 
-// Bit numbers in the switch value
-#define BTN_NONE 0
-#define BTN_UP 1
-#define BTN_LEFT (1 << 1)
-#define BTN_DOWN (1 << 14)
-#define BTN_RIGHT (1 << 15)
-#define BTN_X (1 << 3)
-#define BTN_A (1 << 4)
-#define BTN_Y (1 << 5)
-#define BTN_B (1 << 6)
-#define BTN_RBUMP (1 << 9)
-#define BTN_LBUMP (1 << 13)
-#define BTN_START (1 << 10)
-#define BTN_SELECT (1 << 12)
-#define BTN_JOGS (BTN_UP | BTN_DOWN | BTN_LEFT | BTN_RIGHT | BTN_A | BTN_B)
-#define BTN_BBUMPS (BTN_LBUMP | BTN_RBUMP)
-#define BTN_REMOVEBUMPS(val) ((val) & ~BTN_BBUMPS)
-#define BTN_DPAD (BTN_UP | BTN_DOWN | BTN_LEFT | BTN_RIGHT)
-#if 0
-const char* names[16] = {"U",
-                         "L",
-                         "NA-2",
-                         "X",
-                         "A",
-                         "Y",
-                         "B",
-                         "NA-7",
-                         "NA-8",
-                         "BR",
-                         "Start",
-                         "NA-11",
-                         "Select",
-                         "BL",
-                         "D",
-                         "R"};
-#endif
-
-enum XY_SystemState_t { XY_SMALL = 0, XY_MEDIUM = 1, XY_LARGE = 2 };
-enum Z_SystemState_t { Z_SMALL = 0, Z_MEDIUM = 1, Z_LARGE = 2 };
-
-uint8_t XY_CurJog = XY_MEDIUM;
-uint8_t Z_CurJog = Z_MEDIUM;
-uint16_t curPressed = 0;
-uint16_t curJog = 0;
-State_t controllerState = ST_ControllerDisabled;
-
 uint8_t isPressed(Button_t button) {
   return (curPressed & button) ? 1 : 0;
 }
@@ -223,248 +132,16 @@ uint8_t isReleased(Button_t button) {
   return 1 - isPressed(button);
 }
 
-void Send(char key, const char* str) {
-#if defined(DESCRIBE_NOT_TYPE)
-  DBG(str);
-#else
-  Keyboard.press(KEY_LEFT_CTRL);
-  Keyboard.press(KEY_LEFT_SHIFT);
-  Keyboard.press(key);
-  delay(1);
-  Keyboard.releaseAll();
-  delay(50);
-#endif
-}
-
-void SendXYJogMultiply() {
-  Send(KEY_F1, "XY Multiply");
-}
-
-void SendXYJogDivide() {
-  Send(KEY_F2, "XY Divide");
-}
-
-void SendZJogMultiply() {
-  Send(KEY_F5, "Z Multiply");
-}
-
-void SendZJogDivide() {
-  Send(KEY_F6, "Z Divide");
-}
-
-void SendXpYp() {
-  Send('u', "X+Y+ jog");
-}
-
-void SendYp() {
-  Send('i', "Y+ jog");
-}
-
-void SendXmYp() {
-  Send('o', "X+Y- jog");
-}
-
-void SendXp() {
-  Send('j', "X+ jog");
-}
-
-void SendXm() {
-  Send('l', "X- jog");
-}
-
-void SendXpYm() {
-  Send('m', "X+Y- jog");
-}
-
-void SendYm() {
-  Send(',', "Y- jog");
-}
-
-void SendXmYm() {
-  Send('.', "X-Y- jog");
-}
-
-void SendZp() {
-  Send('h', "Z+ jog");
-}
-
-void SendZm() {
-  Send('y', "Z- jog");
-}
-
-void SendXZero() {
-  Send('p', "X Zero");
-}
-
-void SendYZero() {
-  Send(';', "Y Zero");
-}
-
-void SendZZero() {
-  Send('/', "Z Zero");
-}
-
-void SendAllZero() {
-  Send('k', "All Zero");
-}
-
-void SendReturnToZero() {
-  Send('d', "Return to Zero");
-}
-
-void SendSoftReset() {
-  Send('g', "Soft Reset");
-}
-
-void SendUnlock() {
-  Send('s', "Unlock");
-}
-
-void SendHomeMachine() {
-  Send('t', "Home!");
-}
-
-// Get ready for an XY-jog
-void JogXYPrep() {
-  XY_SystemState_t target = isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP);
-  while (target != XY_CurJog) {
-    if (target < XY_CurJog) {
-      SendXYJogDivide();
-      XY_CurJog--;
-    } else {
-      SendXYJogMultiply();
-      XY_CurJog++;
-    }
-  }
-}
-
-// Get ready for a Z-jog
-void JogZPrep() {
-  Z_SystemState_t target = isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP);
-  while (target != Z_CurJog) {
-    if (target < Z_CurJog) {
-      SendZJogDivide();
-      Z_CurJog--;
-    } else {
-      SendZJogMultiply();
-      Z_CurJog++;
-    }
-  }
-}
-
-void SendJog(uint16_t toJog) {
-  if (toJog & (BTN_A | BTN_B)) {
-    // Z Jog
-    JogZPrep();
-    if (toJog == BTN_A) {
-      SendZm();
-    } else if (toJog == BTN_B) {
-      SendZp();
-    } else {
-      // TODO: ack
-    }
-  }
-  if (toJog & BTN_DPAD) {
-    JogXYPrep();
-    switch (toJog) {
-      case BTN_UP:
-        SendYp();
-        break;
-      case BTN_DOWN:
-        SendYm();
-        break;
-      case BTN_LEFT:
-        SendXm();
-        break;
-      case BTN_RIGHT:
-        SendXp();
-        break;
-      case BTN_UP | BTN_LEFT:
-        SendXmYp();
-        break;
-      case BTN_UP | BTN_RIGHT:
-        SendXpYp();
-        break;
-      case BTN_DOWN | BTN_LEFT:
-        SendXmYm();
-        break;
-      case BTN_DOWN | BTN_RIGHT:
-        SendXpYm();
-        break;
-      default:
-        // TODO: ack!
-        break;
-    }
-  }
-}
+#include "sendkeys.h"
 
 void resetButtonStates() {
   curPressed = 0;
   controllerState = ST_ControllerDisabled;
 }
 
-void DumpState() {
-  switch (controllerState) {
-    case ST_ControllerDisabled:
-      DBG("ST_ControllerDisabled");
-      break;
-    case ST_MaybeEnabledA:
-      DBG("ST_MaybeEnabledA");
-      break;
-    case ST_MaybeEnabledB:
-      DBG("ST_MaybeEnabledB");
-      break;
-    case ST_MaybeEnabledC:
-      DBG("ST_MaybeEnabledC");
-      break;
-    case ST_Enabled:
-      DBG("ST_Enabled");
-      break;
-    case ST_WaitForResetX:
-      DBG("ST_WaitForResetX");
-      break;
-    case ST_WaitForResetY:
-      DBG("ST_WaitForResetY");
-      break;
-    case ST_WaitForResetZ:
-      DBG("ST_WaitForResetZ");
-      break;
-    case ST_WaitForDisable:
-      DBG("ST_WaitForDisable");
-      break;
-    case ST_MaybeGoHome:
-      DBG("ST_MaybeGoHome");
-      break;
-    case ST_WaitForMaybeHome:
-      DBG("ST_WaitForMaybeHome");
-      break;
-    case ST_WaitForReturnToZero:
-      DBG("ST_WaitForReturnToZero");
-      break;
-    case ST_WaitForUnlock:
-      DBG("ST_WaitForUnlock");
-      break;
-    case ST_WaitForReset:
-      DBG("ST_WaitForReset");
-      break;
-    case ST_WaitForStart:
-      DBG("ST_WaitForStart");
-      break;
-    case ST_WaitForSelect:
-      DBG("ST_WaitForSelect");
-      break;
-    case ST_WaitForSSUp:
-      DBG("ST_WaitForSSUp");
-      break;
-    case ST_WaitForSameJogUp:
-      DBG("ST_WaitForSameJogUp");
-      break;
-    default:
-      DBG("ST_unknown");
-      break;
-  }
-}
-
+// This is a hard-coded state machine documented in the readme
+// It would probably be easier for folks to edit a declarative file
+// Maybe, someday, but for now this works
 void UpdateState() {
   switch (controllerState) {
     case ST_ControllerDisabled:
@@ -657,7 +334,7 @@ void UpdateState() {
   }
 }
 
-static void ReportKey(uint16_t val, bool pressed) {
+ void ReportKey(uint16_t val, bool pressed) {
   if (pressed) {
     curPressed |= 1 << val;
   } else {
@@ -666,8 +343,7 @@ static void ReportKey(uint16_t val, bool pressed) {
   UpdateState();
 }
 
-static uint16_t prevButtons = 0xFFFF;
-static void handleButtons() {
+void handleButtons() {
   // The buffer is 10 bytes
   // First check to make sure the last couple bytes are zeroes
   if (buffer[8] != 0 || buffer[9] != 0) {

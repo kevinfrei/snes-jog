@@ -23,17 +23,20 @@ what that is, just trust that this makes it _super_ easy to talk to.
   - SNES Classic Mini controller (Wired)
     [Amazon link for the controller](https://www.amazon.com/Mario-Retro-SNES-MINI-Controller-Compatible/dp/B0779DS931/ref=sr_1_54_sspa?dchild=1&keywords=SNES&qid=1631203806&s=videogames&sr=1-54-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExN1ZZMDk0UjdEVEc4JmVuY3J5cHRlZElkPUEzU0pFS1VYOVBXMkxBJmVuY3J5cHRlZEFkSWQ9QTA2MTE1NzYxNTBXNTRDMERJQ1lTJndpZGdldE5hbWU9c3BfbXRmJmFjdGlvbj1jbGlja1JlZGlyZWN0JmRvTm90TG9nQ2xpY2s9dHJ1ZQ==),
     [Amazon link for the whole package](https://www.amazon.com/Console-Classic-Built-Controllers-Birthday/dp/B08V4RJQPF/ref=sr_1_2_sspa?dchild=1&keywords=SNES+classic&qid=1631204003&s=videogames&sr=1-2-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUEzSUZEMTBaTDBSUFBOJmVuY3J5cHRlZElkPUEwMTczMzg0MllGV1hEMDNGR0Y5TSZlbmNyeXB0ZWRBZElkPUEwMjYwMDk0MjNWWUc2N0ZWOFFENSZ3aWRnZXROYW1lPXNwX2F0ZiZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU=)
-  - An Arduino-compatible device that supports both USB keyboard protocol & I2C
-    - (A _lot_ of devices fall under this guise. I have a variety of these
-      laying around.)
-    - Teensy LC/3/4 ($10-$20) **TESTED**
-    - Adafruit nRF52840 devices ($15-$30)
+  - An Arduino-compatible device that supports both USB keyboard protocol & I2C.
+    Some possibilities:
+
+    - Keebio USB Elite-C ($20) **Fully tested and working with my CNC**
+    - Teensy LC/3/4 ($10-$20) **Software Tested**
     - SparkFun Pro Micro ($20)
-    - Arduino Nano? (??)
-    - Keebio USB Elite-C ($20) **TESTED**
     - SEEED's XIAO devices looks like the smallest & cheapest ($6!) doodad that
       fits the bill
+    - Adafruit nRF52840 devices ($15-$30)
+    - Arduino Nano? (??)
+      - (A _lot_ of devices fall under this guise. I have a variety of these
+        laying around.)
     - TODO: Make links to those things?
+
   - Optional:
     - A Nintendo Controller female adapter plug (TODO: Link?)
       - I didn't bother with my initial build
@@ -168,6 +171,11 @@ keymappings for the actions in the "Machine" category as follows:
 | Soft Reset                       | Ctrl+Shift+G         |
 | Unlock                           | Ctrl+Shift+S         |
 | Home Machine                     | Ctrl+Shift+T         |
+
+I used the 'Ctrl+Shift' modifier because it's the same for any platform. If I'd
+tried Alt or Command, things would have been much more complicated when working
+across platforms. Trust me on this: I've made too many keyboards and too many
+custom keyboard firmwares to address this exact problem.
 
 ## Implementation
 
