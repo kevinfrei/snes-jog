@@ -19,6 +19,7 @@
 #define BTN_REMOVEBUMPS(val) ((val) & ~BTN_BBUMPS)
 #define BTN_DPAD (BTN_UP | BTN_DOWN | BTN_LEFT | BTN_RIGHT)
 #if 0
+// This is helpful if you're trying to debug
 const char* names[16] = {"U",
                          "L",
                          "NA-2",
