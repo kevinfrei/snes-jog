@@ -33,19 +33,35 @@ about any Arduino device.
   - An Arduino-compatible device that supports both USB keyboard protocol & I2C.
     Some possibilities:
 
-    - Keebio USB Elite-C ($20) **Fully tested and working with my CNC**
-    - Teensy LC/3/4 ($10-$20) **Software Tested**
-    - SparkFun Pro Micro ($20)
-    - SEEED's XIAO devices looks like the smallest & cheapest ($6!) doodad that
-      fits the bill
-    - Adafruit nRF52840 devices ($15-$30)
-    - Arduino Nano? (??)
-      - (A _lot_ of devices fall under this guise. I have a variety of these
-        laying around.)
-    - TODO: Make links to those things?
+    - [Keebio USB Elite-C ($18)](https://keeb.io/collections/diy-parts/products/elite-c-low-profile-version-usb-c-pro-micro-replacement-atmega32u4)
+      - **This is what I'm using: Fully tested and working with my CNC**
+    - [Teensy LC ($12)](https://www.pjrc.com/store/teensylc.html) /
+      [Teensy 3.2 ($20)](https://www.pjrc.com/store/teensy32.html) /
+      [Teensy 4 ($20)](https://www.pjrc.com/store/teensy40.html) ($10-$20)
+      - **I tested the software first using a Teensy 3.2**
+    - [SparkFun Pro Micro ($8)](https://keeb.io/collections/diy-parts/products/pro-micro-5v-16mhz-arduino-compatible-atmega32u4)
+      - This is pretty cheap, but I hear the USB connector is prone to rip off,
+        so be careful (That's a key point of upgrade for the Elite-C I used)
+    - [SEEED Stuidio's 2 XIAO](https://www.seeedstudio.com/Seeeduino-XIAO-Arduino-Microcontroller-SAMD21-Cortex-M0+-p-4426.html)
+      [class of devices](https://www.seeedstudio.com/XIAO-RP2040-v1-0-p-5026.html)
+      looks like the smallest & cheapest ($6!) doodad that fits the bill.
+      - I've got a couple around, but haven't tried them yet.
+    - [Adafruit nRF52840 device ($20-$35)](https://www.adafruit.com/product/4481)
+      or the [Adafruit Trinket M0 ($9)](https://www.adafruit.com/product/3500)
+      - I've used these for a variety of keyboards, and can confirm that they
+        fit the bill, though the Trinket you'll have to solder wires to _pads_
+        which can be a PITA...
+    - Basically, you can use any Arduino device that supports the Keyboard and
+      Wire libraries (They need to have a USB port on them, though that may not
+      mean they support behaving as a keyboard)
+      - A _lot_ of devices fall under this guise. I have a variety of these
+        laying around. I only have a single Arduino-brand device, though,
+        because they're _really_ overpriced/underpowered compared to the
+        alternatives
 
   - Optional:
-    - A Nintendo Controller female adapter plug (TODO: Link?)
+    - A Nintendo Controller adapter.
+      [Adafruit makes a simple one for $3](https://www.adafruit.com/product/4836)
       - I didn't bother with my initial build
       - This would enable you to NOT cut the wires for the controller, making
         the end result a bit 'cleaner'
@@ -57,7 +73,6 @@ about any Arduino device.
   - Depending on the device, you make need separate 'flashing' software.
     - Getting Arduino Studio and firmware flashing up & going is beyond the
       scope of these instructions
-    - TODO: Link to directions for all. I've got multiple of each...
 
 - Tools
 
@@ -158,7 +173,10 @@ firmware flashed onto the Arduino device.
 
 **TODO:** Instructions for building the thing in Arduino
 
-I debugged the software using a Teensy 3.2, because it was an easier workflow)
+Open the .ino file in Arduino. Select your board & port. Upload it.
+
+I debugged the software using a Teensy 3.2, because it was an easier workflow),
+then got it working on the Elite-C.
 
 ### Step 7 Remap the keys in UGS
 
@@ -192,7 +210,9 @@ across platforms. Trust me on this: I've made too many keyboards and too many
 custom keyboard firmwares to address this exact problem.
 
 These aren't working right now. To get diagonal motion working as expected, I'll
-need to add input to output lag:
+need to add input to output lag, because it's pretty darned hard to release them
+at the same time. Maybe I should just detect that another button is held down
+too and use that to decide to move diagonally. #FeatureRequest
 
 | Actions    | Shortcut          |
 | ---------- | ----------------- |
@@ -203,10 +223,13 @@ need to add input to output lag:
 
 **TODO:** Add a screen shot or two or three
 
-### Step 8 Before each use of UGS
+### Step 8 **_Before each use of UGS_**
 
-**This is very important, as you can crash your CNC machine if you're not paying
-attention**
+TODO: Fix this. There's a "XY 10" and "Z 1" command: Use them before each
+movement to make sure we're not using current values (which may be messed up)
+
+**This is very important, as you _will_ crash your spindle if you're not paying
+attention.**
 
 Go to the UGS "Jog Controller" plug-in and make sure that your XY Step is set to
 10mm, and the Z step is set to 1mm. The way the code I wrote moves between
