@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 // Bit numbers in the switch value
 #define BTN_NONE 0

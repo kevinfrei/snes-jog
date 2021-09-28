@@ -9,8 +9,8 @@
 // that would really make this more complicated for non-software people,
 // so adapt to Arduino .ino files and just use headers, I guess...
 
-#include "mytypes.h"
 #include "buttons.h"
+#include "mytypes.h"
 
 // if you have an LED you'd like to blink briefly when the controller is enabled
 // Uncomment this line and change "13" to whatever pin number you want to use
@@ -18,31 +18,31 @@
 // #define LED_PIN 13
 
 const uint8_t I2C_ADDR = 0x52;
-ControllerState cur_state;
+ControllerState_t cur_state;
 uint16_t retry_counter;
 uint8_t buffer[32];
-uint8_t XY_CurJog = XY_MEDIUM;
-uint8_t Z_CurJog = Z_MEDIUM;
-uint16_t curPressed = 0;
-uint16_t curJog = 0;
-State_t controllerState = ST_ControllerDisabled;
-uint16_t prevButtons = 0xFFFF;
+uint8_t xy_cur_jog = XY_MEDIUM;
+uint8_t z_cur_jog = Z_MEDIUM;
+uint16_t cur_pressed = 0;
+uint16_t cur_jog = 0;
+State_t controller_state = ST_ControllerDisabled;
+uint16_t prev_buttons = 0xFFFF;
 
 // This needs to be below our global definitions...
 #include "debugging.h"
 
-#include "led.h"
 #include "controller.h"
+#include "led.h"
 #include "sendkeys.h"
 #include "statemachine.h"
 
- void ReportKey(uint16_t val, bool pressed) {
+void reportKey(uint16_t val, bool pressed) {
   if (pressed) {
-    curPressed |= 1 << val;
+    cur_pressed |= 1 << val;
   } else {
-    curPressed &= ~(1 << val);
+    cur_pressed &= ~(1 << val);
   }
-  UpdateState();
+  updateState();
 }
 
 void handleButtons() {
@@ -54,20 +54,20 @@ void handleButtons() {
   // The first 4 bytes are joystick related
   uint16_t buttons = buffer[4] << 8 | buffer[5];
   // Bytes 6 and 7 are for other buttons
-  if (buttons != prevButtons) {
+  if (buttons != prev_buttons) {
     for (uint8_t i = 0; i < 16; i++) {
       // XOR identifies only changes: Convenient!
-      if ((buttons ^ prevButtons) & (1 << i)) {
+      if ((buttons ^ prev_buttons) & (1 << i)) {
         bool pressed = !(buttons & (1 << i));
-        DumpState();
+        dumpState();
         DBG(" {");
-        ReportKey(i, pressed);
+        reportKey(i, pressed);
         DBG("} to ");
-        DumpState();
+        dumpState();
         DBG("\n");
       }
     }
-    prevButtons = buttons;
+    prev_buttons = buttons;
   }
 }
 

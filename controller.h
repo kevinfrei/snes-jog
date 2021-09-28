@@ -2,7 +2,7 @@
 
 /* This is all the code for communicating with the SNES controller */
 
-uint8_t writeData(uint8_t *data, uint8_t size, const char *err = NULL) {
+uint8_t writeData(uint8_t* data, uint8_t size, const char* err = NULL) {
   Wire.beginTransmission(I2C_ADDR);
   uint8_t num = Wire.write(data, size);
   Wire.endTransmission();
@@ -21,7 +21,7 @@ uint8_t readData(uint8_t count, uint8_t id) {
   writeData(&id, 1, "ID Value write");
   delayMicroseconds(200);
   Wire.requestFrom(I2C_ADDR, count);
-  uint8_t numTries = 0;
+  uint8_t num_tries = 0;
   uint8_t ofs = 0;
   do {
     for (; count && Wire.available(); ofs++) {
@@ -29,10 +29,10 @@ uint8_t readData(uint8_t count, uint8_t id) {
       count--;
     }
     if (count > 0) {
-      numTries++;
+      num_tries++;
       delayMicroseconds(10);
     }
-  } while (count && numTries < 5);
+  } while (count && num_tries < 5);
   if (count > 0) {
     DBG("Missing remaining bytes: ");
     DBGN(count);
@@ -64,8 +64,8 @@ void setupController() {
     return;
   }
   delay(100);
-  uint8_t bytesRead = readData(6, 0xfa);
-  if (bytesRead != 6) {
+  uint8_t bytes_read = readData(6, 0xfa);
+  if (bytes_read != 6) {
 
     cur_state = CS_ERR;
     DBG("Error in setupController");
@@ -89,7 +89,7 @@ void setupController() {
 }
 
 uint8_t isPressed(Button_t button) {
-  return (curPressed & button) ? 1 : 0;
+  return (cur_pressed & button) ? 1 : 0;
 }
 
 uint8_t isReleased(Button_t button) {

@@ -1,7 +1,7 @@
 #pragma once
 
 typedef uint16_t Button_t;
-enum ControllerState { CS_OK, CS_RETRY, CS_INIT, CS_ERR };
+enum ControllerState_t { CS_OK, CS_RETRY, CS_INIT, CS_ERR };
 enum State_t {
   ST_ControllerDisabled,
   ST_MaybeEnabledA,
@@ -25,4 +25,3 @@ enum State_t {
 
 enum XY_SystemState_t { XY_SMALL = 0, XY_MEDIUM = 1, XY_LARGE = 2 };
 enum Z_SystemState_t { Z_SMALL = 0, Z_MEDIUM = 1, Z_LARGE = 2 };
-

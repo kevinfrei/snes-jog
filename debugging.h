@@ -2,21 +2,21 @@
 
 #if defined(LOTSA_TYPING)
 #define DBG(a) Keyboard.print(a)
-#define DBGN(n) TypeNumber(n)
+#define DBGN(n) typeNumber(n)
 #define DESCRIBE_NOT_TYPE 1
 
-void TypeNumber(uint32_t num) {
+void typeNumber(uint32_t num) {
   uint32_t val = 0;
   // Flip the number around to type it out
-  uint8_t trailingZeroes = 0;
+  uint8_t trailing_zeroes = 0;
   while (num) {
     uint8_t v = num % 10;
     val = val * 10 + v;
     num = num / 10;
     if (val == 0) {
-      trailingZeroes++;
+      trailing_zeroes++;
     } else {
-      trailingZeroes = 0;
+      trailing_zeroes = 0;
     }
   }
   // Type the reversed number Least sig digit first...
@@ -24,13 +24,13 @@ void TypeNumber(uint32_t num) {
     Keyboard.write('0' + val % 10);
     val /= 10;
   } while (val);
-  while (trailingZeroes--) {
+  while (trailing_zeroes--) {
     Keyboard.write('0');
   }
 }
 
-void DumpState() {
-  switch (controllerState) {
+void dumpState() {
+  switch (controller_state) {
     case ST_ControllerDisabled:
       DBG("ST_ControllerDisabled");
       break;
@@ -94,5 +94,5 @@ void DumpState() {
 #else
 #define DBG(a) 0
 #define DBGN(a) 0
-#define DumpState() 0
+#define dumpState() 0
 #endif

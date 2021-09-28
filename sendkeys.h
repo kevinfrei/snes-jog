@@ -1,6 +1,6 @@
 #pragma once
 
-void Send(char key, const char* str) {
+void send(char key, const char* str) {
 #if defined(DESCRIBE_NOT_TYPE)
   DBG(str);
 #else
@@ -13,160 +13,162 @@ void Send(char key, const char* str) {
 #endif
 }
 
-void SendXYJogMultiply() {
-  Send(KEY_F1, "XY Multiply");
+void sendXYJogMultiply() {
+  send(KEY_F1, "XY Multiply");
 }
 
-void SendXYJogDivide() {
-  Send(KEY_F2, "XY Divide");
+void sendXYJogDivide() {
+  send(KEY_F2, "XY Divide");
 }
 
-void SendZJogMultiply() {
-  Send(KEY_F5, "Z Multiply");
+void sendZJogMultiply() {
+  send(KEY_F5, "Z Multiply");
 }
 
-void SendZJogDivide() {
-  Send(KEY_F6, "Z Divide");
+void sendZJogDivide() {
+  send(KEY_F6, "Z Divide");
 }
 
-void SendXpYp() {
-  Send('u', "X+Y+ jog");
+void sendXpYp() {
+  send('u', "X+Y+ jog");
 }
 
-void SendYp() {
-  Send('i', "Y+ jog");
+void sendYp() {
+  send('i', "Y+ jog");
 }
 
-void SendXmYp() {
-  Send('o', "X+Y- jog");
+void sendXmYp() {
+  send('o', "X+Y- jog");
 }
 
-void SendXp() {
-  Send('j', "X+ jog");
+void sendXp() {
+  send('j', "X+ jog");
 }
 
-void SendXm() {
-  Send('l', "X- jog");
+void sendXm() {
+  send('l', "X- jog");
 }
 
-void SendXpYm() {
-  Send('m', "X+Y- jog");
+void sendXpYm() {
+  send('m', "X+Y- jog");
 }
 
-void SendYm() {
-  Send(',', "Y- jog");
+void sendYm() {
+  send(',', "Y- jog");
 }
 
-void SendXmYm() {
-  Send('.', "X-Y- jog");
+void sendXmYm() {
+  send('.', "X-Y- jog");
 }
 
-void SendZp() {
-  Send('h', "Z+ jog");
+void sendZp() {
+  send('h', "Z+ jog");
 }
 
-void SendZm() {
-  Send('y', "Z- jog");
+void sendZm() {
+  send('y', "Z- jog");
 }
 
-void SendXZero() {
-  Send('p', "X Zero");
+void sendXZero() {
+  send('p', "X Zero");
 }
 
-void SendYZero() {
-  Send(';', "Y Zero");
+void sendYZero() {
+  send(';', "Y Zero");
 }
 
-void SendZZero() {
-  Send('/', "Z Zero");
+void sendZZero() {
+  send('/', "Z Zero");
 }
 
-void SendAllZero() {
-  Send('k', "All Zero");
+void sendAllZero() {
+  send('k', "All Zero");
 }
 
-void SendReturnToZero() {
-  Send('d', "Return to Zero");
+void sendReturnToZero() {
+  send('d', "Return to Zero");
 }
 
-void SendSoftReset() {
-  Send('g', "Soft Reset");
+void sendSoftReset() {
+  send('g', "Soft Reset");
 }
 
-void SendUnlock() {
-  Send('s', "Unlock");
+void sendUnlock() {
+  send('s', "Unlock");
 }
 
-void SendHomeMachine() {
-  Send('t', "Home!");
+void sendHomeMachine() {
+  send('t', "Home!");
 }
 
 // Get ready for an XY-jog
-void JogXYPrep() {
-  XY_SystemState_t target = (XY_SystemState_t) (isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
-  while (target != XY_CurJog) {
-    if (target < XY_CurJog) {
-      SendXYJogDivide();
-      XY_CurJog--;
+void jogXYPrep() {
+  XY_SystemState_t target =
+      (XY_SystemState_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
+  while (target != xy_cur_jog) {
+    if (target < xy_cur_jog) {
+      sendXYJogDivide();
+      xy_cur_jog--;
     } else {
-      SendXYJogMultiply();
-      XY_CurJog++;
+      sendXYJogMultiply();
+      xy_cur_jog++;
     }
   }
 }
 
 // Get ready for a Z-jog
-void JogZPrep() {
-  Z_SystemState_t target = (Z_SystemState_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
-  while (target != Z_CurJog) {
-    if (target < Z_CurJog) {
-      SendZJogDivide();
-      Z_CurJog--;
+void jogZPrep() {
+  Z_SystemState_t target =
+      (Z_SystemState_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
+  while (target != z_cur_jog) {
+    if (target < z_cur_jog) {
+      sendZJogDivide();
+      z_cur_jog--;
     } else {
-      SendZJogMultiply();
-      Z_CurJog++;
+      sendZJogMultiply();
+      z_cur_jog++;
     }
   }
 }
 
-void SendJog(uint16_t toJog) {
+void sendJog(uint16_t toJog) {
   if (toJog & (BTN_A | BTN_B)) {
     // Z Jog
-    JogZPrep();
+    jogZPrep();
     if (toJog == BTN_A) {
-      SendZm();
+      sendZm();
     } else if (toJog == BTN_B) {
-      SendZp();
+      sendZp();
     } else {
       // TODO: ack
     }
   }
   if (toJog & BTN_DPAD) {
-    JogXYPrep();
+    jogXYPrep();
     switch (toJog) {
       case BTN_UP:
-        SendYp();
+        sendYp();
         break;
       case BTN_DOWN:
-        SendYm();
+        sendYm();
         break;
       case BTN_LEFT:
-        SendXm();
+        sendXm();
         break;
       case BTN_RIGHT:
-        SendXp();
+        sendXp();
         break;
       case BTN_UP | BTN_LEFT:
-        SendXmYp();
+        sendXmYp();
         break;
       case BTN_UP | BTN_RIGHT:
-        SendXpYp();
+        sendXpYp();
         break;
       case BTN_DOWN | BTN_LEFT:
-        SendXmYm();
+        sendXmYm();
         break;
       case BTN_DOWN | BTN_RIGHT:
-        SendXpYm();
+        sendXpYm();
         break;
       default:
         // TODO: ack!
