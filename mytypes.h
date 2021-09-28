@@ -1,7 +1,7 @@
 #pragma once
 
 typedef uint16_t Button_t;
-enum ControllerState_t { CS_OK, CS_RETRY, CS_INIT, CS_ERR };
+enum IIC_State_t { IIC_OK, IIC_RETRY, IIC_INIT, IIC_ERR };
 enum State_t {
   ST_ControllerDisabled,
   ST_MaybeEnabledA,

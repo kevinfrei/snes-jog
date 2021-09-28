@@ -50,31 +50,31 @@ uint8_t readData(uint8_t count, uint8_t id) {
 }
 
 void initController() {
-  cur_state = CS_ERR;
+  cur_state = IIC_ERR;
   // 0x3 is supposed to be the data format, but it seems irrelevant...
   uint8_t data[] = {0xf0, 0x55, 0xfb, 0x00, 0xfe, 0x3};
   if (writeData(data, 6, "Initializing Device") == 6) {
-    cur_state = CS_INIT;
+    cur_state = IIC_INIT;
   }
 }
 
 void setupController() {
   initController();
-  if (cur_state != CS_INIT) {
+  if (cur_state != IIC_INIT) {
     return;
   }
   delay(100);
   uint8_t bytes_read = readData(6, 0xfa);
   if (bytes_read != 6) {
 
-    cur_state = CS_ERR;
+    cur_state = IIC_ERR;
     DBG("Error in setupController");
     return;
   }
   // For now, just hard-check all 6 values
   if (buffer[0] != 1 || buffer[1] != 0 || buffer[2] != 0xa4 ||
       buffer[3] != 0x20 || buffer[4] > 1 || buffer[5] != 1) {
-    cur_state = CS_ERR;
+    cur_state = IIC_ERR;
     DBG("Wrong Values in setupController:  ");
     for (int q = 0; q < 6; q++) {
       DBGN(q);
@@ -84,7 +84,7 @@ void setupController() {
     }
 
   } else {
-    cur_state = CS_OK;
+    cur_state = IIC_OK;
   }
 }
 

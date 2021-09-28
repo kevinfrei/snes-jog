@@ -35,7 +35,6 @@ void updateState() {
     case ST_MaybeEnabledC:
       if (cur_pressed == BTN_NONE) {
         controller_state = ST_Enabled;
-        blinkLed();
       } else if (cur_pressed != BTN_LBUMP) {
         controller_state = ST_ControllerDisabled;
       }
