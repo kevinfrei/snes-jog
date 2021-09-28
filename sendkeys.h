@@ -103,7 +103,7 @@ void SendHomeMachine() {
 
 // Get ready for an XY-jog
 void JogXYPrep() {
-  XY_SystemState_t target = isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP);
+  XY_SystemState_t target = (XY_SystemState_t) (isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
   while (target != XY_CurJog) {
     if (target < XY_CurJog) {
       SendXYJogDivide();
@@ -117,7 +117,7 @@ void JogXYPrep() {
 
 // Get ready for a Z-jog
 void JogZPrep() {
-  Z_SystemState_t target = isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP);
+  Z_SystemState_t target = (Z_SystemState_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
   while (target != Z_CurJog) {
     if (target < Z_CurJog) {
       SendZJogDivide();
@@ -174,4 +174,3 @@ void SendJog(uint16_t toJog) {
     }
   }
 }
-

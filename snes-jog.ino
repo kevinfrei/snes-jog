@@ -109,6 +109,7 @@ void loop() {
   }
   uint32_t elapsed = millis() - startTime;
   // We scan at 200 hz: Seems reasonable, yes?
+  // This seems to avoid the need to debounce...
   if (elapsed < 5) {
     delay(5 - elapsed);
   }
