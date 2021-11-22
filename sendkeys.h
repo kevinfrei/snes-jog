@@ -1,6 +1,6 @@
 #pragma once
 
-void Send(char key,
+void send(char key,
           const char*
 #if defined(DESCRIBE_DONT_TYPE)
               str
@@ -20,100 +20,100 @@ void Send(char key,
 #endif
 }
 
-void SendXYJogMultiply() {
-  Send(KEY_F1, "XY Multiply");
+void sendXYJogMultiply() {
+  send(KEY_F1, "XY Multiply");
 }
 
-void SendXYJogDivide() {
-  Send(KEY_F2, "XY Divide");
+void sendXYJogDivide() {
+  send(KEY_F2, "XY Divide");
 }
 
-void SendXYJogReset() {
-  Send(KEY_PAGE_UP, "XY 10");
+void sendXYJogReset() {
+  send(KEY_PAGE_UP, "XY 10");
 }
 
-void SendZJogMultiply() {
-  Send(KEY_F5, "Z Multiply");
+void sendZJogMultiply() {
+  send(KEY_F5, "Z Multiply");
 }
 
-void SendZJogDivide() {
-  Send(KEY_F6, "Z Divide");
+void sendZJogDivide() {
+  send(KEY_F6, "Z Divide");
 }
 
-void SendZJogReset() {
-  Send(KEY_PAGE_DOWN, "Z 1");
+void sendZJogReset() {
+  send(KEY_PAGE_DOWN, "Z 1");
 }
 
-void SendXpYp() {
-  Send('u', "X+Y+ jog");
+void sendXpYp() {
+  send('u', "X+Y+ jog");
 }
 
-void SendYp() {
-  Send('i', "Y+ jog");
+void sendYp() {
+  send('i', "Y+ jog");
 }
 
-void SendXmYp() {
-  Send('o', "X+Y- jog");
+void sendXmYp() {
+  send('o', "X+Y- jog");
 }
 
-void SendXp() {
-  Send('j', "X+ jog");
+void sendXp() {
+  send('j', "X+ jog");
 }
 
-void SendXm() {
-  Send('l', "X- jog");
+void sendXm() {
+  send('l', "X- jog");
 }
 
-void SendXpYm() {
-  Send('m', "X+Y- jog");
+void sendXpYm() {
+  send('m', "X+Y- jog");
 }
 
-void SendYm() {
-  Send(',', "Y- jog");
+void sendYm() {
+  send(',', "Y- jog");
 }
 
-void SendXmYm() {
-  Send('.', "X-Y- jog");
+void sendXmYm() {
+  send('.', "X-Y- jog");
 }
 
-void SendZp() {
-  Send('h', "Z+ jog");
+void sendZp() {
+  send('h', "Z+ jog");
 }
 
-void SendZm() {
-  Send('y', "Z- jog");
+void sendZm() {
+  send('y', "Z- jog");
 }
 
-void SendXZero() {
-  Send('p', "X Zero");
+void sendXZero() {
+  send('p', "X Zero");
 }
 
-void SendYZero() {
-  Send(';', "Y Zero");
+void sendYZero() {
+  send(';', "Y Zero");
 }
 
-void SendZZero() {
-  Send('/', "Z Zero");
+void sendZZero() {
+  send('/', "Z Zero");
 }
 
-void SendAllZero() {
-  Send('k', "All Zero");
+void sendAllZero() {
+  send('k', "All Zero");
 }
 
-void SendReturnToZero() {
-  Send('d', "Return to Zero");
+void sendReturnToZero() {
+  send('d', "Return to Zero");
 }
 
-void SendSoftReset() {
-  Send('g', "Soft Reset");
+void sendSoftReset() {
+  send('g', "Soft Reset");
 }
 
-void SendUnlock() {
-  Send('s', "Unlock");
+void sendUnlock() {
+  send('s', "Unlock");
 }
 
-void SendHomeMachine() {
-  Send('t', "Home!");
+void sendHomeMachine() {
+  send('t', "Home!");
 }
 
 // These are here to make sure we're occasionally setting the jog speed, even if
@@ -121,30 +121,30 @@ void SendHomeMachine() {
 // UGS directly
 bool tooLongXY() {
   uint32_t now = millis();
-  bool tooLong = (now - lastJogXY) > (JOG_TIMEOUT * 1000);
-  lastJogXY = now;
+  bool tooLong = (now - last_jog_xy) > (JOG_TIMEOUT * 1000);
+  last_jog_xy = now;
   return tooLong;
 }
 
 bool tooLongZ() {
   uint32_t now = millis();
-  bool tooLong = (now - lastJogZ) > (JOG_TIMEOUT * 1000);
-  lastJogZ = now;
+  bool tooLong = (now - last_jog_z) > (JOG_TIMEOUT * 1000);
+  last_jog_z = now;
   return tooLong;
 }
 
 // Get ready for an XY-jog
-void JogXYPrep() {
+void jogXYPrep() {
   Jog_Magnitude_t target =
       (Jog_Magnitude_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
-  if (tooLongXY() || target != XY_CurJog) {
-    SendXYJogReset();
+  if (tooLongXY() || target != xy_cur_jog) {
+    sendXYJogReset();
     switch (target) {
       case JM_LARGE:
-        SendXYJogMultiply();
+        sendXYJogMultiply();
         break;
       case JM_SMALL:
-        SendXYJogDivide();
+        sendXYJogDivide();
         break;
       case JM_MEDIUM:
       default:
@@ -152,21 +152,21 @@ void JogXYPrep() {
         break;
     }
   }
-  XY_CurJog = target;
+  xy_cur_jog = target;
 }
 
 // Get ready for a Z-jog
-void JogZPrep() {
+void jogZPrep() {
   Jog_Magnitude_t target =
       (Jog_Magnitude_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
-  if (tooLongZ() || target != Z_CurJog) {
-    SendZJogReset();
+  if (tooLongZ() || target != z_cur_jog) {
+    sendZJogReset();
     switch (target) {
       case JM_LARGE:
-        SendZJogMultiply();
+        sendZJogMultiply();
         break;
       case JM_SMALL:
-        SendZJogDivide();
+        sendZJogDivide();
         break;
       case JM_MEDIUM:
       default:
@@ -174,47 +174,47 @@ void JogZPrep() {
         break;
     }
   }
-  Z_CurJog = target;
+  z_cur_jog = target;
 }
 
-void SendJog(uint16_t toJog) {
+void sendJog(uint16_t toJog) {
   if (toJog & (BTN_A | BTN_B)) {
     // Z Jog
-    JogZPrep();
+    jogZPrep();
     if (toJog == BTN_A) {
-      SendZm();
+      sendZm();
     } else if (toJog == BTN_B) {
-      SendZp();
+      sendZp();
     } else {
       // TODO: ack
     }
   }
   if (toJog & BTN_DPAD) {
-    JogXYPrep();
+    jogXYPrep();
     switch (toJog) {
       case BTN_UP:
-        SendYp();
+        sendYp();
         break;
       case BTN_DOWN:
-        SendYm();
+        sendYm();
         break;
       case BTN_LEFT:
-        SendXm();
+        sendXm();
         break;
       case BTN_RIGHT:
-        SendXp();
+        sendXp();
         break;
       case BTN_UP | BTN_LEFT:
-        SendXmYp();
+        sendXmYp();
         break;
       case BTN_UP | BTN_RIGHT:
-        SendXpYp();
+        sendXpYp();
         break;
       case BTN_DOWN | BTN_LEFT:
-        SendXmYm();
+        sendXmYm();
         break;
       case BTN_DOWN | BTN_RIGHT:
-        SendXpYm();
+        sendXpYm();
         break;
       default:
         // TODO: ack!

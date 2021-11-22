@@ -19,19 +19,20 @@
 // Uncomment this line and change "13" to whatever pin number you want to use
 // (13 is the pin for the LED on a Teensy 3.2)
 // #define LED_PIN 13
-
+const uint8_t NEOPIXEL_PIN = 11;
 const uint8_t I2C_ADDR = 0x52;
-ControllerState cur_state;
+IIC_State_t cur_state;
 uint16_t retry_counter;
 uint8_t buffer[32];
-Jog_Magnitude_t XY_CurJog = JM_MEDIUM;
-Jog_Magnitude_t Z_CurJog = JM_MEDIUM;
-uint16_t curPressed = 0;
-uint16_t curJog = 0;
-State_t controllerState = ST_ControllerDisabled;
-uint16_t prevButtons = 0xFFFF;
-uint32_t lastJogXY = 0;
-uint32_t lastJogZ = 0;
+Jog_Magnitude_t xy_cur_jog = JM_MEDIUM;
+Jog_Magnitude_t z_cur_jog = JM_MEDIUM;
+uint16_t cur_pressed = 0;
+uint16_t cur_jog = 0;
+State_t controller_state = ST_ControllerDisabled;
+uint16_t prev_buttons = 0xFFFF;
+uint32_t last_jog_xy = 0;
+uint32_t last_jog_z = 0;
+
 // If we haven't moved the spindle in 15 seconds (or longer)
 // we should set the movement distance before moving the spindle
 const uint32_t JOG_TIMEOUT = 15;
@@ -40,17 +41,17 @@ const uint32_t JOG_TIMEOUT = 15;
 #include "debugging.h"
 
 #include "controller.h"
-#include "led.h"
+#include "display.h"
 #include "sendkeys.h"
 #include "statemachine.h"
 
-void ReportKey(uint16_t val, bool pressed) {
+void reportKey(uint16_t val, bool pressed) {
   if (pressed) {
-    curPressed |= 1 << val;
+    cur_pressed |= 1 << val;
   } else {
-    curPressed &= ~(1 << val);
+    cur_pressed &= ~(1 << val);
   }
-  UpdateState();
+  updateState();
 }
 
 void handleButtons() {
@@ -62,20 +63,20 @@ void handleButtons() {
   // The first 4 bytes are joystick related
   uint16_t buttons = buffer[4] << 8 | buffer[5];
   // Bytes 6 and 7 are for other buttons
-  if (buttons != prevButtons) {
+  if (buttons != prev_buttons) {
     for (uint8_t i = 0; i < 16; i++) {
       // XOR identifies only changes: Convenient!
-      if ((buttons ^ prevButtons) & (1 << i)) {
+      if ((buttons ^ prev_buttons) & (1 << i)) {
         bool pressed = !(buttons & (1 << i));
-        DumpState();
+        dumpState();
         DBG(" {");
-        ReportKey(i, pressed);
+        reportKey(i, pressed);
         DBG("} to ");
-        DumpState();
+        dumpState();
         DBG("\n");
       }
     }
-    prevButtons = buttons;
+    prev_buttons = buttons;
   }
 }
 
@@ -84,40 +85,47 @@ void setup() {
   Keyboard.begin();
   setupController();
   resetButtonStates();
+  displayStateSetup();
   retry_counter = 0;
 }
 
 void loop() {
+  static uint32_t lastScanTime = 0;
+  static uint32_t lastDisplayTime = 0;
   uint32_t startTime = millis();
-  switch (cur_state) {
-    // Everything is normal: Read the device, and deal with the buttons
-    case CS_OK:
-      // Read 10 bytes. On the Teensy, I could read 21, but on an Elite-C, it
-      // seems to fail after 10 for no reason I can ascertain...
-      if (readData(10, 0) != 10) {
-        cur_state = CS_RETRY;
-        break;
-      }
-      handleButtons();
-      break;
-    case CS_RETRY:
-    case CS_ERR:
-      if (++retry_counter == 20) {
-        retry_counter = 0;
-        setupController();
-        if (cur_state != CS_OK) {
-          cur_state = CS_RETRY;
-        } else {
-          resetButtonStates();
+  if (startTime - lastScanTime > 5) {
+    lastScanTime = startTime;
+    switch (cur_state) {
+      // Everything is normal: Read the device, and deal with the buttons
+      case IIC_OK:
+        // Read 10 bytes. On the Teensy, I could read 21, but on an Elite-C, it
+        // seems to fail after 10 for no reason I can ascertain...
+        if (readData(10, 0) != 10) {
+          cur_state = IIC_RETRY;
+          break;
         }
-      }
-      break;
-    default:
-      cur_state = CS_ERR;
+        handleButtons();
+        break;
+      case IIC_RETRY:
+      case IIC_ERR:
+        if (++retry_counter == 20) {
+          retry_counter = 0;
+          setupController();
+          if (cur_state != IIC_OK) {
+            cur_state = IIC_RETRY;
+          } else {
+            resetButtonStates();
+          }
+        }
+        break;
+      default:
+        cur_state = IIC_ERR;
+    }
   }
-  uint32_t elapsed = millis() - startTime;
-  // We scan at 200 hz: Seems reasonable, yes?
-  if (elapsed < 5) {
-    delay(5 - elapsed);
+  if (startTime - lastDisplayTime > 0) {
+    displayState(cur_state, controller_state, startTime);
+    lastDisplayTime = startTime;
   }
+  // I should probably put some sort of yield thing in here, right?
+  delay(0);
 }

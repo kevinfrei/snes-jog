@@ -21,7 +21,7 @@ uint8_t readData(uint8_t count, uint8_t id) {
   writeData(&id, 1, "ID Value write");
   delayMicroseconds(200);
   Wire.requestFrom(I2C_ADDR, count);
-  uint8_t numTries = 0;
+  uint8_t num_tries = 0;
   uint8_t ofs = 0;
   do {
     for (; count && Wire.available(); ofs++) {
@@ -29,10 +29,10 @@ uint8_t readData(uint8_t count, uint8_t id) {
       count--;
     }
     if (count > 0) {
-      numTries++;
+      num_tries++;
       delayMicroseconds(10);
     }
-  } while (count && numTries < 5);
+  } while (count && num_tries < 5);
   if (count > 0) {
     DBG("Missing remaining bytes: ");
     DBGN(count);
@@ -50,31 +50,31 @@ uint8_t readData(uint8_t count, uint8_t id) {
 }
 
 void initController() {
-  cur_state = CS_ERR;
+  cur_state = IIC_ERR;
   // 0x3 is supposed to be the data format, but it seems irrelevant...
   uint8_t data[] = {0xf0, 0x55, 0xfb, 0x00, 0xfe, 0x3};
   if (writeData(data, 6, "Initializing Device") == 6) {
-    cur_state = CS_INIT;
+    cur_state = IIC_INIT;
   }
 }
 
 void setupController() {
   initController();
-  if (cur_state != CS_INIT) {
+  if (cur_state != IIC_INIT) {
     return;
   }
   delay(100);
-  uint8_t bytesRead = readData(6, 0xfa);
-  if (bytesRead != 6) {
+  uint8_t bytes_read = readData(6, 0xfa);
+  if (bytes_read != 6) {
 
-    cur_state = CS_ERR;
+    cur_state = IIC_ERR;
     DBG("Error in setupController");
     return;
   }
   // For now, just hard-check all 6 values
   if (buffer[0] != 1 || buffer[1] != 0 || buffer[2] != 0xa4 ||
       buffer[3] != 0x20 || buffer[4] > 1 || buffer[5] != 1) {
-    cur_state = CS_ERR;
+    cur_state = IIC_ERR;
     DBG("Wrong Values in setupController:  ");
     for (int q = 0; q < 6; q++) {
       DBGN(q);
@@ -84,12 +84,12 @@ void setupController() {
     }
 
   } else {
-    cur_state = CS_OK;
+    cur_state = IIC_OK;
   }
 }
 
 uint8_t isPressed(Button_t button) {
-  return (curPressed & button) ? 1 : 0;
+  return (cur_pressed & button) ? 1 : 0;
 }
 
 uint8_t isReleased(Button_t button) {

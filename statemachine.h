@@ -4,202 +4,201 @@
 // ./img foldero
 
 void resetButtonStates() {
-  curPressed = 0;
-  controllerState = ST_ControllerDisabled;
+  cur_pressed = 0;
+  controller_state = ST_ControllerDisabled;
 }
 
 // This is a hard-coded state machine documented in the readme
 // It would probably be easier for folks to edit a declarative file
 // Maybe, someday, but for now this works
-void UpdateState() {
-  switch (controllerState) {
+void updateState() {
+  switch (controller_state) {
     case ST_ControllerDisabled:
-      if (curPressed == BTN_LBUMP) {
-        controllerState = ST_MaybeEnabledA;
+      if (cur_pressed == BTN_LBUMP) {
+        controller_state = ST_MaybeEnabledA;
       }
       break;
     case ST_MaybeEnabledA:
-      if (curPressed == (BTN_LBUMP | BTN_START)) {
-        controllerState = ST_MaybeEnabledB;
-      } else if (curPressed != BTN_LBUMP) {
-        controllerState = ST_ControllerDisabled;
+      if (cur_pressed == (BTN_LBUMP | BTN_START)) {
+        controller_state = ST_MaybeEnabledB;
+      } else if (cur_pressed != BTN_LBUMP) {
+        controller_state = ST_ControllerDisabled;
       }
       break;
     case ST_MaybeEnabledB:
-      if (curPressed == BTN_LBUMP) {
-        controllerState = ST_MaybeEnabledC;
-      } else if (curPressed != (BTN_LBUMP | BTN_START)) {
-        controllerState = ST_ControllerDisabled;
+      if (cur_pressed == BTN_LBUMP) {
+        controller_state = ST_MaybeEnabledC;
+      } else if (cur_pressed != (BTN_LBUMP | BTN_START)) {
+        controller_state = ST_ControllerDisabled;
       }
       break;
     case ST_MaybeEnabledC:
-      if (curPressed == BTN_NONE) {
-        controllerState = ST_Enabled;
-        blinkLed();
-      } else if (curPressed != BTN_LBUMP) {
-        controllerState = ST_ControllerDisabled;
+      if (cur_pressed == BTN_NONE) {
+        controller_state = ST_Enabled;
+      } else if (cur_pressed != BTN_LBUMP) {
+        controller_state = ST_ControllerDisabled;
       }
       break;
     case ST_Enabled:
-      switch (curPressed) {
+      switch (cur_pressed) {
         case BTN_BBUMPS | BTN_X:
-          controllerState = ST_WaitForResetX;
+          controller_state = ST_WaitForResetX;
           break;
         case BTN_BBUMPS | BTN_Y:
-          controllerState = ST_WaitForResetY;
+          controller_state = ST_WaitForResetY;
           break;
         case BTN_LBUMP | BTN_START:
-          controllerState = ST_WaitForDisable;
+          controller_state = ST_WaitForDisable;
           break;
         case BTN_BBUMPS | BTN_START:
-          controllerState = ST_WaitForResetZ;
+          controller_state = ST_WaitForResetZ;
           break;
         case BTN_BBUMPS | BTN_SELECT:
-          controllerState = ST_WaitForMaybeHome;
+          controller_state = ST_WaitForMaybeHome;
           break;
         case BTN_LBUMP | BTN_SELECT:
-          controllerState = ST_WaitForReturnToZero;
+          controller_state = ST_WaitForReturnToZero;
           break;
         case BTN_SELECT:
-          controllerState = ST_WaitForStart;
+          controller_state = ST_WaitForStart;
           break;
         case BTN_START:
-          controllerState = ST_WaitForSelect;
+          controller_state = ST_WaitForSelect;
           break;
         case BTN_RBUMP | BTN_START:
-          controllerState = ST_WaitForUnlock;
+          controller_state = ST_WaitForUnlock;
           break;
         case BTN_RBUMP | BTN_SELECT:
-          controllerState = ST_WaitForReset;
+          controller_state = ST_WaitForReset;
           break;
         default: {
-          uint16_t noBumps = BTN_REMOVEBUMPS(curPressed);
-          if (BTN_JOGS & noBumps) {
-            curJog = noBumps;
-            controllerState = ST_WaitForSameJogUp;
+          uint16_t no_bumps = BTN_REMOVEBUMPS(cur_pressed);
+          if (BTN_JOGS & no_bumps) {
+            cur_jog = no_bumps;
+            controller_state = ST_WaitForSameJogUp;
           }
           break;
         }
       }
       break;
     case ST_WaitForResetX:
-      if (curPressed != (BTN_BBUMPS | BTN_X)) {
-        if (curPressed == BTN_BBUMPS) {
-          SendXZero();
+      if (cur_pressed != (BTN_BBUMPS | BTN_X)) {
+        if (cur_pressed == BTN_BBUMPS) {
+          sendXZero();
         }
-        controllerState = ST_Enabled;
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForResetY:
-      if (curPressed != (BTN_BBUMPS | BTN_Y)) {
-        if (curPressed == BTN_BBUMPS) {
-          SendYZero();
+      if (cur_pressed != (BTN_BBUMPS | BTN_Y)) {
+        if (cur_pressed == BTN_BBUMPS) {
+          sendYZero();
         }
-        controllerState = ST_Enabled;
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForResetZ:
-      if (curPressed != (BTN_BBUMPS | BTN_START)) {
-        if (curPressed == BTN_BBUMPS) {
+      if (cur_pressed != (BTN_BBUMPS | BTN_START)) {
+        if (cur_pressed == BTN_BBUMPS) {
           // Start was released
-          SendZZero();
+          sendZZero();
         }
-        if (curPressed == (BTN_BBUMPS | BTN_START | BTN_SELECT)) {
-          controllerState = ST_MaybeGoHome;
+        if (cur_pressed == (BTN_BBUMPS | BTN_START | BTN_SELECT)) {
+          controller_state = ST_MaybeGoHome;
         } else {
-          controllerState = ST_Enabled;
+          controller_state = ST_Enabled;
         }
       }
       break;
     case ST_WaitForDisable:
-      if (curPressed != (BTN_LBUMP | BTN_START)) {
-        if (curPressed == BTN_LBUMP) {
-          controllerState = ST_ControllerDisabled;
+      if (cur_pressed != (BTN_LBUMP | BTN_START)) {
+        if (cur_pressed == BTN_LBUMP) {
+          controller_state = ST_ControllerDisabled;
         } else {
-          controllerState = ST_Enabled;
+          controller_state = ST_Enabled;
         }
       }
       break;
     case ST_MaybeGoHome:
-      if (curPressed != (BTN_BBUMPS | BTN_START | BTN_SELECT)) {
-        if (curPressed == (BTN_BBUMPS | BTN_START) ||
-            curPressed == (BTN_BBUMPS | BTN_SELECT) ||
-            curPressed == BTN_BBUMPS) {
-          SendHomeMachine();
+      if (cur_pressed != (BTN_BBUMPS | BTN_START | BTN_SELECT)) {
+        if (cur_pressed == (BTN_BBUMPS | BTN_START) ||
+            cur_pressed == (BTN_BBUMPS | BTN_SELECT) ||
+            cur_pressed == BTN_BBUMPS) {
+          sendHomeMachine();
         }
-        controllerState = ST_Enabled;
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForMaybeHome:
-      if (curPressed == (BTN_BBUMPS | BTN_SELECT | BTN_START)) {
-        controllerState = ST_MaybeGoHome;
-      } else if (curPressed != (BTN_BBUMPS | BTN_SELECT)) {
-        controllerState = ST_Enabled;
+      if (cur_pressed == (BTN_BBUMPS | BTN_SELECT | BTN_START)) {
+        controller_state = ST_MaybeGoHome;
+      } else if (cur_pressed != (BTN_BBUMPS | BTN_SELECT)) {
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForReturnToZero:
-      if (curPressed != (BTN_LBUMP | BTN_SELECT)) {
-        if (curPressed == BTN_LBUMP) {
-          SendReturnToZero();
+      if (cur_pressed != (BTN_LBUMP | BTN_SELECT)) {
+        if (cur_pressed == BTN_LBUMP) {
+          sendReturnToZero();
         }
-        controllerState = ST_Enabled;
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForUnlock:
-      if (curPressed != (BTN_RBUMP | BTN_START)) {
-        if (curPressed == BTN_RBUMP) {
-          SendUnlock();
+      if (cur_pressed != (BTN_RBUMP | BTN_START)) {
+        if (cur_pressed == BTN_RBUMP) {
+          sendUnlock();
         }
-        controllerState = ST_Enabled;
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForReset:
-      if (curPressed != (BTN_RBUMP | BTN_SELECT)) {
-        if (curPressed == BTN_RBUMP) {
-          SendSoftReset();
+      if (cur_pressed != (BTN_RBUMP | BTN_SELECT)) {
+        if (cur_pressed == BTN_RBUMP) {
+          sendSoftReset();
         }
-        controllerState = ST_Enabled;
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForStart:
-      if (curPressed != BTN_SELECT) {
-        if (curPressed == (BTN_START | BTN_SELECT)) {
-          controllerState = ST_WaitForSSUp;
+      if (cur_pressed != BTN_SELECT) {
+        if (cur_pressed == (BTN_START | BTN_SELECT)) {
+          controller_state = ST_WaitForSSUp;
         } else {
-          controllerState = ST_Enabled;
+          controller_state = ST_Enabled;
         }
       }
       break;
     case ST_WaitForSelect:
-      if (curPressed != BTN_START) {
-        if (curPressed == (BTN_START | BTN_SELECT)) {
-          controllerState = ST_WaitForSSUp;
+      if (cur_pressed != BTN_START) {
+        if (cur_pressed == (BTN_START | BTN_SELECT)) {
+          controller_state = ST_WaitForSSUp;
         } else {
-          controllerState = ST_Enabled;
+          controller_state = ST_Enabled;
         }
       }
       break;
     case ST_WaitForSSUp:
-      if (curPressed != (BTN_START | BTN_SELECT)) {
-        if (curPressed == BTN_START || curPressed == BTN_SELECT) {
-          SendAllZero();
+      if (cur_pressed != (BTN_START | BTN_SELECT)) {
+        if (cur_pressed == BTN_START || cur_pressed == BTN_SELECT) {
+          sendAllZero();
         }
-        controllerState = ST_Enabled;
+        controller_state = ST_Enabled;
       }
       break;
     case ST_WaitForSameJogUp: {
-      uint16_t noBumps = BTN_REMOVEBUMPS(curPressed);
-      if (noBumps != curJog) {
+      uint16_t no_bumps = BTN_REMOVEBUMPS(cur_pressed);
+      if (no_bumps != cur_jog) {
         // This identifies only changed bits (xor)
         // And then masks out any that are pressed,
         // resulting in only the buttons that have been released
-        SendJog((noBumps ^ curJog) & ~curPressed);
+        sendJog((no_bumps ^ cur_jog) & ~cur_pressed);
       }
-      controllerState = ST_Enabled;
+      controller_state = ST_Enabled;
       break;
     }
     default:
-      controllerState = ST_ControllerDisabled;
+      controller_state = ST_ControllerDisabled;
       break;
   }
 }
