@@ -1,15 +1,22 @@
 #pragma once
 
-void Send(char key, const char* str) {
-#if defined(DESCRIBE_NOT_TYPE)
+void Send(char key,
+          const char*
+#if defined(DESCRIBE_DONT_TYPE)
+              str
+#endif
+) {
+#if defined(DESCRIBE_DONT_TYPE)
+  DBGN((uint8_t)key);
+  DBG(":");
   DBG(str);
 #else
   Keyboard.press(KEY_LEFT_CTRL);
   Keyboard.press(KEY_LEFT_SHIFT);
   Keyboard.press(key);
-  delay(1);
+  delayMicroseconds(200);
   Keyboard.releaseAll();
-  delay(20);
+  delay(10);
 #endif
 }
 
@@ -21,12 +28,20 @@ void SendXYJogDivide() {
   Send(KEY_F2, "XY Divide");
 }
 
+void SendXYJogReset() {
+  Send(KEY_PAGE_UP, "XY 10");
+}
+
 void SendZJogMultiply() {
   Send(KEY_F5, "Z Multiply");
 }
 
 void SendZJogDivide() {
   Send(KEY_F6, "Z Divide");
+}
+
+void SendZJogReset() {
+  Send(KEY_PAGE_DOWN, "Z 1");
 }
 
 void SendXpYp() {
@@ -101,32 +116,65 @@ void SendHomeMachine() {
   Send('t', "Home!");
 }
 
+// These are here to make sure we're occasionally setting the jog speed, even if
+// we don't think we have to. It's helpful just in case the user monkeys with
+// UGS directly
+bool tooLongXY() {
+  uint32_t now = millis();
+  bool tooLong = (now - lastJogXY) > (JOG_TIMEOUT * 1000);
+  lastJogXY = now;
+  return tooLong;
+}
+
+bool tooLongZ() {
+  uint32_t now = millis();
+  bool tooLong = (now - lastJogZ) > (JOG_TIMEOUT * 1000);
+  lastJogZ = now;
+  return tooLong;
+}
+
 // Get ready for an XY-jog
 void JogXYPrep() {
-  XY_SystemState_t target = isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP);
-  while (target != XY_CurJog) {
-    if (target < XY_CurJog) {
-      SendXYJogDivide();
-      XY_CurJog--;
-    } else {
-      SendXYJogMultiply();
-      XY_CurJog++;
+  Jog_Magnitude_t target =
+      (Jog_Magnitude_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
+  if (tooLongXY() || target != XY_CurJog) {
+    SendXYJogReset();
+    switch (target) {
+      case JM_LARGE:
+        SendXYJogMultiply();
+        break;
+      case JM_SMALL:
+        SendXYJogDivide();
+        break;
+      case JM_MEDIUM:
+      default:
+        // Do nothing here
+        break;
     }
   }
+  XY_CurJog = target;
 }
 
 // Get ready for a Z-jog
 void JogZPrep() {
-  Z_SystemState_t target = isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP);
-  while (target != Z_CurJog) {
-    if (target < Z_CurJog) {
-      SendZJogDivide();
-      Z_CurJog--;
-    } else {
-      SendZJogMultiply();
-      Z_CurJog++;
+  Jog_Magnitude_t target =
+      (Jog_Magnitude_t)(isPressed(BTN_RBUMP) + isPressed(BTN_LBUMP));
+  if (tooLongZ() || target != Z_CurJog) {
+    SendZJogReset();
+    switch (target) {
+      case JM_LARGE:
+        SendZJogMultiply();
+        break;
+      case JM_SMALL:
+        SendZJogDivide();
+        break;
+      case JM_MEDIUM:
+      default:
+        // Do nothing heroe
+        break;
     }
   }
+  Z_CurJog = target;
 }
 
 void SendJog(uint16_t toJog) {
@@ -174,4 +222,3 @@ void SendJog(uint16_t toJog) {
     }
   }
 }
-

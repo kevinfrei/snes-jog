@@ -2,7 +2,7 @@
 
 /* This is all the code for communicating with the SNES controller */
 
-uint8_t writeData(uint8_t *data, uint8_t size, const char *err = NULL) {
+uint8_t writeData(uint8_t* data, uint8_t size, const char* err = NULL) {
   Wire.beginTransmission(I2C_ADDR);
   uint8_t num = Wire.write(data, size);
   Wire.endTransmission();
@@ -12,7 +12,7 @@ uint8_t writeData(uint8_t *data, uint8_t size, const char *err = NULL) {
     DBG(" but only wrote ");
     DBGN(num);
     DBG(" bytes instead: ");
-    DBGN(err);
+    DBG(err);
   }
   return num;
 }

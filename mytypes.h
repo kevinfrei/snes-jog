@@ -23,6 +23,4 @@ enum State_t {
   ST_WaitForSSUp
 };
 
-enum XY_SystemState_t { XY_SMALL = 0, XY_MEDIUM = 1, XY_LARGE = 2 };
-enum Z_SystemState_t { Z_SMALL = 0, Z_MEDIUM = 1, Z_LARGE = 2 };
-
+enum Jog_Magnitude_t { JM_SMALL = 0, JM_MEDIUM = 1, JM_LARGE = 2 };

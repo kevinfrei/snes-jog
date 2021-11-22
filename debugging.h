@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(LOTSA_TYPING)
+#if defined(DIAGNOSTICS)
 #define DBG(a) Keyboard.print(a)
 #define DBGN(n) TypeNumber(n)
 #define DESCRIBE_NOT_TYPE 1
@@ -92,7 +92,7 @@ void DumpState() {
 }
 
 #else
-#define DBG(a) 0
-#define DBGN(a) 0
-#define DumpState() 0
+#define DBG(a)
+#define DBGN(a)
+#define DumpState()
 #endif

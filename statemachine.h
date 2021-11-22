@@ -1,6 +1,7 @@
 #pragma once
- 
-// This is the state machine that implements the SVG you may have seen in the ./img foldero
+
+// This is the state machine that implements the SVG you may have seen in the
+// ./img foldero
 
 void resetButtonStates() {
   curPressed = 0;

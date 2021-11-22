@@ -9,8 +9,11 @@
 // that would really make this more complicated for non-software people,
 // so adapt to Arduino .ino files and just use headers, I guess...
 
-#include "mytypes.h"
+// #define DIAGNOSTICS 1
+// #define DESCRIBE_DONT_TYPE 1
+
 #include "buttons.h"
+#include "mytypes.h"
 
 // if you have an LED you'd like to blink briefly when the controller is enabled
 // Uncomment this line and change "13" to whatever pin number you want to use
@@ -21,22 +24,27 @@ const uint8_t I2C_ADDR = 0x52;
 ControllerState cur_state;
 uint16_t retry_counter;
 uint8_t buffer[32];
-uint8_t XY_CurJog = XY_MEDIUM;
-uint8_t Z_CurJog = Z_MEDIUM;
+Jog_Magnitude_t XY_CurJog = JM_MEDIUM;
+Jog_Magnitude_t Z_CurJog = JM_MEDIUM;
 uint16_t curPressed = 0;
 uint16_t curJog = 0;
 State_t controllerState = ST_ControllerDisabled;
 uint16_t prevButtons = 0xFFFF;
+uint32_t lastJogXY = 0;
+uint32_t lastJogZ = 0;
+// If we haven't moved the spindle in 15 seconds (or longer)
+// we should set the movement distance before moving the spindle
+const uint32_t JOG_TIMEOUT = 15;
 
 // This needs to be below our global definitions...
 #include "debugging.h"
 
-#include "led.h"
 #include "controller.h"
+#include "led.h"
 #include "sendkeys.h"
 #include "statemachine.h"
 
- void ReportKey(uint16_t val, bool pressed) {
+void ReportKey(uint16_t val, bool pressed) {
   if (pressed) {
     curPressed |= 1 << val;
   } else {
